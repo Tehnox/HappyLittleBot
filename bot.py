@@ -25,7 +25,7 @@ class HappyLittleBot(commands.Bot):
         self.active_channels = {}
         self.img_files = sorted(glob.glob(os.path.join(os.getcwd(), 'days_img', '*.png')))
 
-    @tasks.loop(time=time(21, 5))
+    @tasks.loop(time=time(21, 10))
     async def celebration_task(self) -> None:
         day = date.today().timetuple().tm_yday
         for guild in self.guilds:
