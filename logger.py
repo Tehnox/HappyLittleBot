@@ -9,7 +9,7 @@ def setup_logger():
         os.mkdir(log_directory)
     log_file_name = os.path.join(log_directory, f'session_{datetime.datetime.now():%Y-%m-%d_%H-%M-%S}.log')
 
-    formatter = logging.Formatter('[{asctime}] [{levelname}] {name}: {message}", "%Y-%m-%d %H:%M:%S', style="{")
+    formatter = logging.Formatter('[{asctime}] [{levelname}] {name}: {message}', '%Y-%m-%d %H:%M:%S', style="{")
 
     file_handler = logging.FileHandler(log_file_name, mode='w', encoding='utf-8')
     file_handler.setLevel(logging.INFO)
