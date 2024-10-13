@@ -3,12 +3,14 @@ import re
 import glob
 import logging
 import discord
+import datetime
 from discord.ext import commands, tasks
 from discord.ext.commands import Context
 from datetime import time, date
 
 intents = discord.Intents.default()
 intents.message_content = True
+utc = datetime.timezone.utc
 
 
 class HappyLittleBot(commands.Bot):
@@ -25,7 +27,7 @@ class HappyLittleBot(commands.Bot):
         self.active_channels = {}
         self.img_files = sorted(glob.glob(os.path.join(os.getcwd(), 'days_img', '*.png')))
 
-    @tasks.loop(time=time(21, 10))
+    @tasks.loop(time=time(21, 30, tzinfo=utc))
     async def celebration_task(self) -> None:
         day = date.today().timetuple().tm_yday
         for guild in self.guilds:
@@ -60,6 +62,11 @@ class HappyLittleBot(commands.Bot):
                 return
 
         await self.process_commands(message)
+
+    async def setup_hook(self) -> None:
+        self._logger.info(f"Logged in as {self.user.name}")
+        self._logger.info(f"discord.py API version: {discord.__version__}")
+        self.celebration_task.start()
 
     async def send_clb_img(self, channel: discord.TextChannel, index: int) -> None:
         fp = self.img_files[index % len(self.img_files)]
