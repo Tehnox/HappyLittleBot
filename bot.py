@@ -22,7 +22,7 @@ class HappyLittleBot(commands.Bot):
         )
 
         self._logger = logging.getLogger('happy_little_bot')
-        self._default_channel_names = ['chat', 'чат', 'беседка']
+        self._default_channel_names = ['chat', 'чат', 'general', 'основной']
         self._re = '(?=.*?(?:какой|что|че|чо))(?=.*?(?:сегодня|седня|сейчас|щас))(?=.*?(?:день|праздник|денек|денечек)).+'
         self.active_channels = {}
         self.img_files = sorted(glob.glob(os.path.join(os.getcwd(), 'days_img', '*.png')))
@@ -66,6 +66,7 @@ class HappyLittleBot(commands.Bot):
     async def setup_hook(self) -> None:
         self._logger.info(f"Logged in as {self.user.name}")
         self._logger.info(f"discord.py API version: {discord.__version__}")
+        await self.change_presence(activity=discord.Game('С праздником, дорогие друзья!'))
         self.celebration_task.start()
 
     async def send_clb_img(self, channel: discord.TextChannel, index: int) -> None:
