@@ -19,6 +19,7 @@ class HappyLittleBot(commands.Bot):
             command_prefix=commands.when_mentioned_or('/'),
             intents=intents,
             help_command=None,
+            activity=discord.Game('С праздником, дорогие друзья!')
         )
 
         self._logger = logging.getLogger('happy_little_bot')
@@ -66,7 +67,6 @@ class HappyLittleBot(commands.Bot):
     async def setup_hook(self) -> None:
         self._logger.info(f"Logged in as {self.user.name}")
         self._logger.info(f"discord.py API version: {discord.__version__}")
-        await self.change_presence(activity=discord.Game('С праздником, дорогие друзья!'))
         self.celebration_task.start()
 
     async def send_clb_img(self, channel: discord.TextChannel, index: int) -> None:
