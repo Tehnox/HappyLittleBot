@@ -26,7 +26,9 @@ class HappyLittleBot(commands.Bot):
         self._default_channel_names = ['chat', 'чат', 'general', 'основной']
         self._re = '(?=.*?(?:какой|что|че|чо))(?=.*?(?:сегодня|седня|сейчас|щас))(?=.*?(?:день|праздник|денек|денечек)).+'
         self.active_channels = {}
-        self.img_files = sorted(glob.glob(os.path.join(os.getcwd(), 'days_img', '*.png')), reverse=True)
+        self.img_files = sorted(glob.glob(os.path.join(os.getcwd(), 'days_img', '*.png')),
+                                reverse=True, key=lambda x: int(os.path.basename(x)[:-4]))
+        self.img_files.reverse()
 
     @tasks.loop(time=time(21, 30, tzinfo=utc))
     async def celebration_task(self) -> None:
@@ -59,7 +61,8 @@ class HappyLittleBot(commands.Bot):
             if match:
                 day = date.today().timetuple().tm_yday
                 await self.send_clb_img(message.channel, day)
-                self._logger.info(f'Celebrating with {message.guild.name} in {message.channel.name} in response to {message.author.name}')
+                self._logger.info(
+                    f'Celebrating with {message.guild.name} in {message.channel.name} in response to {message.author.name}')
                 return
 
         await self.process_commands(message)
