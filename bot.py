@@ -62,8 +62,9 @@ class HappyLittleBot(commands.Bot):
             if match:
                 day = date.today().timetuple().tm_yday
                 await self.send_clb_img(message.channel, day)
+                g_name = message.guild.name if message.guild else ''
                 self._logger.info(
-                    f'Celebrating with {message.guild.name} in {message.channel.name} in response to {message.author.name}')
+                    f'Celebrating with {g_name} in {message.channel.name} in response to {message.author.name}')
                 return
 
         await self.process_commands(message)
