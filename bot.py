@@ -5,7 +5,7 @@ import logging
 import discord
 import datetime
 from discord.ext import commands, tasks
-from discord.ext.commands import Context
+from discord.channel import DMChannel
 from datetime import time, date
 
 intents = discord.Intents.default()
@@ -62,9 +62,11 @@ class HappyLittleBot(commands.Bot):
             if match:
                 day = date.today().timetuple().tm_yday
                 await self.send_clb_img(message.channel, day)
-                g_name = message.guild.name if message.guild else ''
-                self._logger.info(
-                    f'Celebrating with {g_name} in {message.channel.name} in response to {message.author.name}')
+                if message.channel is DMChannel:
+                    log_msg = f'Celebrating with {message.author.name} in DMs'
+                else:
+                    log_msg = f'Celebrating with {message.guild.name} in {message.channel.name} in response to {message.author.name}'
+                self._logger.info(log_msg)
                 return
 
         await self.process_commands(message)
