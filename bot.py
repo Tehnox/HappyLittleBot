@@ -53,7 +53,8 @@ class HappyLittleBot(commands.Bot):
         if message.author == self.user or message.author.bot:
             return
 
-        self.active_channels[message.guild.id] = message.channel.id
+        if message.guild and message.guild.id:
+            self.active_channels[message.guild.id] = message.channel.id
 
         ctx = await self.get_context(message)
         if not ctx.valid:
