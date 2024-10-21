@@ -3,14 +3,12 @@ import re
 import glob
 import logging
 import discord
-import datetime
 from discord.ext import commands, tasks
 from discord.channel import DMChannel
-from datetime import time, date
+from datetime import time, date, datetime, timedelta
 
 intents = discord.Intents.default()
 intents.message_content = True
-utc = datetime.timezone.utc
 
 
 class HappyLittleBot(commands.Bot):
@@ -26,11 +24,12 @@ class HappyLittleBot(commands.Bot):
         self._default_channel_names = ['chat', 'чат', 'general', 'основной']
         self._re = '(?=.*?(?:какой|что|че|чо))(?=.*?(?:сегодня|седня|сейчас|щас))(?=.*?(?:день|праздник|денек|денечек)).+'
         self.active_channels = {}
+        self.channels_cd = {}
         self.img_files = sorted(glob.glob(os.path.join(os.getcwd(), 'days_img', '*.png')),
                                 reverse=True, key=lambda x: int(os.path.basename(x)[:-4]))
         self.img_files.reverse()
 
-    @tasks.loop(time=time(21, 30, tzinfo=utc))
+    @tasks.loop(time=time(21, 30))
     async def celebration_task(self) -> None:
         day = date.today().timetuple().tm_yday
         for guild in self.guilds:
@@ -59,9 +58,15 @@ class HappyLittleBot(commands.Bot):
         ctx = await self.get_context(message)
         if not ctx.valid:
             match = re.match(self._re, message.content.lower())
-            if match:
+            last_usage = self.channels_cd.get(message.channel.id)
+            if not last_usage:
+                last_usage = datetime(1970, 1, 1, 1)
+
+            is_not_on_cd = (datetime.now() - last_usage) > timedelta(hours=3)
+            if match and is_not_on_cd:
                 day = date.today().timetuple().tm_yday
                 await self.send_clb_img(message.channel, day)
+                self.channels_cd[message.channel.id] = datetime.now()
                 if isinstance(message.channel, DMChannel):
                     log_msg = f'Celebrating with {message.author.name} in DMs'
                 else:
