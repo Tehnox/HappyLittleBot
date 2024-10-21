@@ -29,7 +29,7 @@ class HappyLittleBot(commands.Bot):
                                 reverse=True, key=lambda x: int(os.path.basename(x)[:-4]))
         self.img_files.reverse()
 
-    @tasks.loop(time=time(21, 30))
+    @tasks.loop(time=time(21, 1))
     async def celebration_task(self) -> None:
         day = date.today().timetuple().tm_yday
         for guild in self.guilds:
